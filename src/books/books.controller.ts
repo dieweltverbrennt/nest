@@ -6,11 +6,17 @@ import {
   Delete,
   Body,
   Param,
+  UseInterceptors,
 } from '@nestjs/common';
+
 import { BooksService } from './books.service';
 import { Book } from './schemas/book.schema';
+import { ResponseInterceptor } from '../common/interceptors/response.interceptor';
+import { CreateBookDto } from './dto/create-book.dto';
+import { ValidationPipe } from '../common/pipes/validation.pipe';
 
 @Controller('books')
+@UseInterceptors(ResponseInterceptor)
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
@@ -20,7 +26,7 @@ export class BooksController {
   }
 
   @Post()
-  create(@Body() book: Book) {
+  create(@Body(new ValidationPipe()) book: CreateBookDto) {
     return this.booksService.create(book);
   }
 
