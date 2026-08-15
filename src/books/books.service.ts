@@ -20,7 +20,7 @@ export class BooksService {
     return this.bookModel.create(book);
   }
 
-  async update(id: string, book: Book) {
+  async update(id: string, book: CreateBookDto) {
     return this.bookModel.findByIdAndUpdate(id, book, {
       new: true,
     });

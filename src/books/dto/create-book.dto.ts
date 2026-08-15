@@ -8,4 +8,19 @@ export class CreateBookDto {
   @IsString()
   @IsNotEmpty()
   authors: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  favorite: string;
+
+  @IsString()
+  fileCover: string;
+
+  @IsString()
+  fileName: string;
+
+  @IsString()
+  fileBook: string;
 }

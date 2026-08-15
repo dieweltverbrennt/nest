@@ -31,7 +31,7 @@ export class BooksController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() book: Book) {
+  update(@Param('id') id: string, @Body() book: CreateBookDto) {
     return this.booksService.update(id, book);
   }
 

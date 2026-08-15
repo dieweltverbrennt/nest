@@ -16,12 +16,12 @@ export class ResponseInterceptor implements NestInterceptor {
         data,
       })),
 
-      // catchError((error) => {
-      //   return throwError(() => ({
-      //     status: 'fail',
-      //     data: error,
-      //   }));
-      // }),
+      catchError((error) => {
+        return throwError(() => ({
+          status: 'fail',
+          data: error,
+        }));
+      }),
     );
   }
 }
