@@ -27,6 +27,11 @@ export class BooksController {
     return this.booksService.findAll();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.booksService.findOne(id);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body(new ValidationPipe()) book: CreateBookDto) {

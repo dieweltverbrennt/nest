@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { NotFoundException } from '@nestjs/common';
 
 import { BooksService } from './books.service';
 import { Book } from './schemas/book.schema';
@@ -9,6 +10,7 @@ describe('BooksService', () => {
 
   const mockBookModel = {
     find: jest.fn(),
+    findById: jest.fn(),
     create: jest.fn(),
     findByIdAndUpdate: jest.fn(),
     findByIdAndDelete: jest.fn(),
@@ -45,6 +47,34 @@ describe('BooksService', () => {
 
       expect(result).toEqual(books);
       expect(mockBookModel.find).toHaveBeenCalled();
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a book by id', async () => {
+      const id = '123';
+
+      const book = {
+        title: 'Book 1',
+        authors: 'Author 1',
+      };
+
+      mockBookModel.findById.mockResolvedValue(book);
+
+      const result = await service.findOne(id);
+
+      expect(result).toEqual(book);
+      expect(mockBookModel.findById).toHaveBeenCalledWith(id);
+    });
+
+    it('should throw NotFoundException if book is not found', async () => {
+      const id = '123';
+
+      mockBookModel.findById.mockResolvedValue(null);
+
+      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
+
+      expect(mockBookModel.findById).toHaveBeenCalledWith(id);
     });
   });
 

@@ -4,12 +4,15 @@ import request from 'supertest';
 
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 
 describe('BooksController (e2e)', () => {
   let app: INestApplication;
 
   const mockBooksService = {
     findAll: jest.fn(),
+    findOne: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
@@ -24,9 +27,15 @@ describe('BooksController (e2e)', () => {
           useValue: mockBooksService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: () => true,
+      })
+      .compile();
 
     app = module.createNestApplication();
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.init();
   });
@@ -61,6 +70,30 @@ describe('BooksController (e2e)', () => {
       });
 
       expect(mockBooksService.findAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /books/:id', () => {
+    it('should return a book by id', async () => {
+      const id = '123';
+
+      const book = {
+        title: 'Book 1',
+        authors: 'Author 1',
+      };
+
+      mockBooksService.findOne.mockResolvedValue(book);
+
+      const response = await request(app.getHttpServer())
+        .get(`/books/${id}`)
+        .expect(200);
+
+      expect(response.body).toEqual({
+        status: 'success',
+        data: book,
+      });
+
+      expect(mockBooksService.findOne).toHaveBeenCalledWith(id);
     });
   });
 
